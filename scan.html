@@ -1,32 +1,36 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Sea Level Action</title>
+</head>
+<body>
+  <h1>✅ Thank you!</h1>
+  <p>You helped lower the sea level.</p>
+
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getDatabase, ref, runTransaction } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
+    // 🔥 Your Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyANWovU5bG4AR9zuA8vgfiqUQqyAIwfqGs",
       authDomain: "poc-sea-level.firebaseapp.com",
-      databaseURL: "https://poc-sea-level-default-rtdb.asia-southeast1.firebasedatabase.app/",
       projectId: "poc-sea-level",
-      storageBucket: "poc-sea-level.appspot.com",
+      storageBucket: "poc-sea-level.appspot.com",   
       messagingSenderId: "189055923417",
-      appId: "1:189055923417:web:f952d3a635fd051ad93ac8"
+      appId: "1:189055923417:web:f952d3a635fd051ad93ac8",
+      databaseURL: "https://poc-sea-level-default-rtdb.firebaseio.com" 
     };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
+    // 🔼 Increase the count when this page loads
     const countRef = ref(db, "seaLevel/count");
     runTransaction(countRef, (current) => {
       return (current || 0) + 1;
     });
   </script>
-</head>
-<body>
-  <h1>✅ Thank you!</h1>
-  <p>You helped lower the sea level.</p>
 </body>
 </html>
