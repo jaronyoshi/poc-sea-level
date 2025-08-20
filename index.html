@@ -100,21 +100,32 @@
     const baseHeight = 80; // starting %
     const dropPerScan = 5; // % drop per scan
 
-    // Initialize the database if needed
+    // Initialize database with 0 if it doesn't exist
     const countRef = ref(db, "seaLevel/count");
     
-    // First, try to initialize the count if it doesn't exist
-    onValue(countRef, (snapshot) => {
-      if (!snapshot.exists()) {
-        console.log("Initializing count to 0");
-        set(countRef, 0);
-      }
-    }, { onlyOnce: true });
+    try {
+      // Set initial value
+      await set(countRef, 0);
+      console.log("Database initialized");
+    } catch (error) {
+      console.log("Database might already exist or connection issue:", error);
+    }
 
     // 🔄 Realtime listener
     onValue(countRef, (snapshot) => {
       try {
-        const count = snapshot.val() || 0;
+        const count = snapshot.val();
+        console.log("Received count from Firebase:", count);
+        
+        if (count === null || count === undefined) {
+          console.log("No count data, setting to 0");
+          countElement.textContent = "0";
+          heightElement.textContent = "80%";
+          statusElement.textContent = "Connected ✅";
+          statusElement.style.color = "#4caf50";
+          return;
+        }
+        
         const newHeight = Math.max(0, baseHeight - count * dropPerScan);
         
         console.log(`Count: ${count}, New Height: ${newHeight}%`);
@@ -136,7 +147,6 @@
       statusElement.style.color = "#f44336";
     });
 
-    // Add some visual feedback
     console.log("Sea Level Monitor initialized");
   </script>
 </body>
