@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sea Level Action</title>
+  <script type="module">
+    // Import Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, runTransaction } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    // Firebase config (replace with your project’s)
+  const firebaseConfig = {
+  apiKey: "AIzaSyANWovU5bG4AR9zuA8vgfiqUQqyAIwfqGs",
+  authDomain: "poc-sea-level.firebaseapp.com",
+  projectId: "poc-sea-level",
+  storageBucket: "poc-sea-level.firebasestorage.app",
+  messagingSenderId: "189055923417",
+  appId: "1:189055923417:web:f952d3a635fd051ad93ac8"
+};
+
+    // Init
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // When page loads, increment count
+    const countRef = ref(db, "seaLevel/count");
+    runTransaction(countRef, (current) => {
+      return (current || 0) + 1;
+    });
+  </script>
+</head>
+<body>
+  <h1>✅ Thank you!</h1>
+  <p>You helped lower the sea level.</p>
+</body>
+</html>

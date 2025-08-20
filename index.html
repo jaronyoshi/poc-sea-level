@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sea Level Display</title>
+  <style>
+    body {
+      margin: 0;
+      background: url('city-background.jpg') no-repeat center center;
+      background-size: cover;
+      overflow: hidden;
+    }
+    #ocean {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 80%; /* starting sea level */
+      background: rgba(255, 0, 102, 0.7);
+      transition: height 0.8s ease;
+    }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyANWovU5bG4AR9zuA8vgfiqUQqyAIwfqGs",
+  authDomain: "poc-sea-level.firebaseapp.com",
+  projectId: "poc-sea-level",
+  storageBucket: "poc-sea-level.firebasestorage.app",
+  messagingSenderId: "189055923417",
+  appId: "1:189055923417:web:f952d3a635fd051ad93ac8"
+};
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const ocean = document.getElementById("ocean");
+    const baseHeight = 80; // starting percentage
+    const dropPerScan = 2; // % to lower each scan
+
+    // Listen for realtime updates
+    const countRef = ref(db, "seaLevel/count");
+    onValue(countRef, (snapshot) => {
+      const count = snapshot.val() || 0;
+      const newHeight = Math.max(0, baseHeight - count * dropPerScan);
+      ocean.style.height = newHeight + "%";
+    });
+  </script>
+</head>
+<body>
+  <div id="ocean"></div>
+</body>
+</html>
