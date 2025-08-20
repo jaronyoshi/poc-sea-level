@@ -23,20 +23,21 @@
     import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
     const firebaseConfig = {
-  apiKey: "AIzaSyANWovU5bG4AR9zuA8vgfiqUQqyAIwfqGs",
-  authDomain: "poc-sea-level.firebaseapp.com",
-  projectId: "poc-sea-level",
-  storageBucket: "poc-sea-level.firebasestorage.app",
-  messagingSenderId: "189055923417",
-  appId: "1:189055923417:web:f952d3a635fd051ad93ac8"
-};
+      apiKey: "AIzaSyANWovU5bG4AR9zuA8vgfiqUQqyAIwfqGs",
+      authDomain: "poc-sea-level.firebaseapp.com",
+      databaseURL: "https://poc-sea-level-default-rtdb.firebaseio.com", /* ✅ required */
+      projectId: "poc-sea-level",
+      storageBucket: "poc-sea-level.appspot.com", /* ✅ corrected */
+      messagingSenderId: "189055923417",
+      appId: "1:189055923417:web:f952d3a635fd051ad93ac8"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
     const ocean = document.getElementById("ocean");
     const baseHeight = 80; // starting percentage
-    const dropPerScan = 2; // % to lower each scan
+    const dropPerScan = 2; // % drop per scan
 
     // Listen for realtime updates
     const countRef = ref(db, "seaLevel/count");
@@ -49,6 +50,5 @@
 </head>
 <body>
   <div id="ocean"></div>
-  <a href="scan.html">scan page</a>
 </body>
 </html>
