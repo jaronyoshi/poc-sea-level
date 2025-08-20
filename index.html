@@ -6,9 +6,10 @@
   <style>
     body {
       margin: 0;
-      background: url('city-background.jpg') no-repeat center center;
+      background: linear-gradient(to bottom, #87CEEB 0%, #4682B4 100%);
       background-size: cover;
       overflow: hidden;
+      font-family: Arial, sans-serif;
     }
     #ocean {
       position: absolute;
@@ -17,17 +18,65 @@
       height: 80%; /* Starting sea level */
       background: rgba(0, 179, 255, 0.7);
       transition: height 0.8s ease;
+      box-shadow: 0 -5px 20px rgba(0, 179, 255, 0.5);
+    }
+    #info {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: white;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-radius: 10px;
+      z-index: 100;
+    }
+    #nav {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
+    }
+    #nav a {
+      background: #ff6b35;
+      color: white;
+      padding: 12px 20px;
+      text-decoration: none;
+      border-radius: 25px;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+    #nav a:hover {
+      background: #ff5722;
+    }
+    .city {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 200px;
+      background: linear-gradient(to top, #2c3e50, #34495e);
+      z-index: 50;
+      opacity: 0.8;
     }
   </style>
 </head>
 <body>
-  <div id="ocean"></div>
+  <div id="info">
+    <h3>🌊 Sea Level Monitor</h3>
+    <p>Current Count: <span id="count">Loading...</span></p>
+    <p>Ocean Height: <span id="height">80%</span></p>
+    <p>Status: <span id="status">Connecting...</span></p>
+  </div>
 
-  <a href="scan.html">scan nav</a>
+  <div id="nav">
+    <a href="scan.html">🔬 Take Action</a>
+  </div>
+
+  <div class="city"></div>
+  <div id="ocean"></div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
     // 🔥 Your Firebase config
     const firebaseConfig = {
@@ -44,16 +93,51 @@
     const db = getDatabase(app);
 
     const ocean = document.getElementById("ocean");
+    const countElement = document.getElementById("count");
+    const heightElement = document.getElementById("height");
+    const statusElement = document.getElementById("status");
+    
     const baseHeight = 80; // starting %
     const dropPerScan = 5; // % drop per scan
 
-    // 🔄 Realtime listener
+    // Initialize the database if needed
     const countRef = ref(db, "seaLevel/count");
+    
+    // First, try to initialize the count if it doesn't exist
     onValue(countRef, (snapshot) => {
-      const count = snapshot.val() || 0;
-      const newHeight = Math.max(0, baseHeight - count * dropPerScan);
-      ocean.style.height = newHeight + "%";
+      if (!snapshot.exists()) {
+        console.log("Initializing count to 0");
+        set(countRef, 0);
+      }
+    }, { onlyOnce: true });
+
+    // 🔄 Realtime listener
+    onValue(countRef, (snapshot) => {
+      try {
+        const count = snapshot.val() || 0;
+        const newHeight = Math.max(0, baseHeight - count * dropPerScan);
+        
+        console.log(`Count: ${count}, New Height: ${newHeight}%`);
+        
+        ocean.style.height = newHeight + "%";
+        countElement.textContent = count;
+        heightElement.textContent = newHeight + "%";
+        statusElement.textContent = "Connected ✅";
+        statusElement.style.color = "#4caf50";
+        
+      } catch (error) {
+        console.error("Error updating display:", error);
+        statusElement.textContent = "Error ❌";
+        statusElement.style.color = "#f44336";
+      }
+    }, (error) => {
+      console.error("Firebase connection error:", error);
+      statusElement.textContent = "Connection Failed ❌";
+      statusElement.style.color = "#f44336";
     });
+
+    // Add some visual feedback
+    console.log("Sea Level Monitor initialized");
   </script>
 </body>
 </html>

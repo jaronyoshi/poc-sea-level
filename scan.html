@@ -3,14 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <title>Sea Level Action</title>
+  <style>
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      color: white;
+    }
+    .container {
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+    h1 {
+      font-size: 3em;
+      margin: 0 0 20px 0;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+    p {
+      font-size: 1.2em;
+      margin: 20px 0;
+      opacity: 0.9;
+    }
+    #status {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border-radius: 25px;
+      font-weight: bold;
+    }
+    .loading {
+      background: rgba(255, 193, 7, 0.8);
+      color: #333;
+    }
+    .success {
+      background: rgba(76, 175, 80, 0.8);
+      color: white;
+    }
+    .error {
+      background: rgba(244, 67, 54, 0.8);
+      color: white;
+    }
+    a {
+      display: inline-block;
+      margin-top: 30px;
+      padding: 15px 30px;
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      text-decoration: none;
+      border-radius: 25px;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+    }
+    a:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+  </style>
 </head>
 <body>
-  <h1>✅ Thank you!</h1>
-  <p>You helped lower the sea level.</p>
+  <div class="container">
+    <h1>🌊 Sea Level Action</h1>
+    <p>You're helping lower the sea level!</p>
+    <div id="status" class="loading">Processing...</div>
+    <a href="index.html">🏠 Back to Monitor</a>
+  </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, runTransaction } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getDatabase, ref, runTransaction, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
     // 🔥 Your Firebase config
     const firebaseConfig = {
@@ -25,12 +92,47 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    const statusElement = document.getElementById("status");
 
-    // 🔼 Increase the count when this page loads
-    const countRef = ref(db, "seaLevel/count");
-    runTransaction(countRef, (current) => {
-      return (current || 0) + 1;
-    });
+    async function updateSeaLevel() {
+      try {
+        const countRef = ref(db, "seaLevel/count");
+        
+        // First check if the path exists and initialize if needed
+        const snapshot = await get(countRef);
+        if (!snapshot.exists()) {
+          console.log("Initializing count to 0 before incrementing");
+          await runTransaction(countRef, (current) => {
+            return 1; // Start with 1 since this is the first scan
+          });
+        } else {
+          // Increment the existing count
+          await runTransaction(countRef, (current) => {
+            const newValue = (current || 0) + 1;
+            console.log(`Incrementing count from ${current} to ${newValue}`);
+            return newValue;
+          });
+        }
+
+        // Success feedback
+        statusElement.textContent = "✅ Success! Sea level lowered.";
+        statusElement.className = "success";
+        
+        // Get the updated count for display
+        const updatedSnapshot = await get(countRef);
+        const newCount = updatedSnapshot.val();
+        console.log(`New count: ${newCount}`);
+        
+      } catch (error) {
+        console.error("Error updating sea level:", error);
+        statusElement.textContent = "❌ Error updating sea level";
+        statusElement.className = "error";
+      }
+    }
+
+    // Run the update when page loads
+    console.log("Scan page loaded, updating sea level...");
+    updateSeaLevel();
   </script>
 </body>
 </html>

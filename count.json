@@ -1,5 +1,6 @@
 {
-  "seaLevel": {
-    "count": 0
+  "rules": {
+    ".read": true,
+    ".write": true
   }
 }
