@@ -9,9 +9,9 @@
     const firebaseConfig = {
       apiKey: "AIzaSyANWovU5bG4AR9zuA8vgfiqUQqyAIwfqGs",
       authDomain: "poc-sea-level.firebaseapp.com",
-      databaseURL: "https://poc-sea-level-default-rtdb.firebaseio.com", /* ✅ required */
+      databaseURL: "https://poc-sea-level-default-rtdb.asia-southeast1.firebasedatabase.app/",
       projectId: "poc-sea-level",
-      storageBucket: "poc-sea-level.appspot.com", /* ✅ corrected */
+      storageBucket: "poc-sea-level.appspot.com",
       messagingSenderId: "189055923417",
       appId: "1:189055923417:web:f952d3a635fd051ad93ac8"
     };
@@ -19,7 +19,6 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    // Increment the count on page load
     const countRef = ref(db, "seaLevel/count");
     runTransaction(countRef, (current) => {
       return (current || 0) + 1;
