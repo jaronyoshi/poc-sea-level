@@ -48,27 +48,19 @@
     #nav a:hover {
       background: #ff5722;
     }
-    .city {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 200px;
-      background: linear-gradient(to top, #2c3e50, #34495e);
-      z-index: 50;
-      opacity: 0.8;
-    }
+  
   </style>
 </head>
 <body>
   <div id="info">
-    <h3>🌊 Sea Level Monitor</h3>
+    <h3>Sea Level Monitor</h3>
     <p>Current Count: <span id="count">Loading...</span></p>
     <p>Ocean Height: <span id="height">80%</span></p>
     <p>Status: <span id="status">Connecting...</span></p>
   </div>
 
   <div id="nav">
-    <a href="scan.html">🔬 Take Action</a>
+    <a href="scan.html">Take Action</a>
   </div>
 
   <div class="city"></div>
@@ -78,7 +70,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-    // 🔥 Your Firebase config
+    //  Your Firebase config
     const firebaseConfig = {
       apiKey: "AIzaSyANWovU5bG4AR9zuA8vgfiqUQqyAIwfqGs",
       authDomain: "poc-sea-level.firebaseapp.com",
